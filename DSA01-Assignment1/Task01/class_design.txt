@@ -1,0 +1,12 @@
+SmartCard:
+    1.checking card balance
+    2.maintaing minimum 50 rupees
+FareTable:
+    1.stores the cost of zones
+    2.manages at peak hours
+Passenger:
+    1.it represent the name of the passenger 
+    2. information about which category he/she belongs to
+Journey:
+    1.it stores zones,date and time 
+    

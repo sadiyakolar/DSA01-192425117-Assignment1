@@ -1,0 +1,8 @@
+SmartCard Class:
+    1.it is used to store the balance of the card.
+    2.it checks the available is enough(50) is there or not.
+FareTable Class:
+    1. it store the codt of each zone.
+    2.it also manages the cost at peak hours.
+Protecting the Balance:
+    1.to keep the card information private of the passenger.
