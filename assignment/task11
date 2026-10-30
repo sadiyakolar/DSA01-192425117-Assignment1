@@ -1,0 +1,144 @@
+
+#include <iostream>
+#include <iomanip>
+using namespace std;
+
+enum class Zone
+{
+    Inner,
+    Middle,
+    Outer
+};
+
+constexpr long long INNER_FARE = 1000;
+constexpr long long MIDDLE_FARE = 2000;
+constexpr long long OUTER_FARE = 3000;
+
+constexpr int PEAK_SURCHARGE_PERCENT = 20;
+constexpr long long MIN_BALANCE_PAISE = 5000;
+
+class FareTable
+{
+public:
+    long long getFare(Zone zone, bool peak) const
+    {
+        long long fare = 0;
+
+        switch (zone)
+        {
+            case Zone::Inner:
+                fare = INNER_FARE;
+                break;
+
+            case Zone::Middle:
+                fare = MIDDLE_FARE;
+                break;
+
+            case Zone::Outer:
+                fare = OUTER_FARE;
+                break;
+        }
+
+        if (peak)
+        {
+            fare += fare * PEAK_SURCHARGE_PERCENT / 100;
+        }
+
+        return fare;
+    }
+};
+
+class SmartCard
+{
+private:
+    long long balance;
+
+public:
+    explicit SmartCard(long long initialBalance)
+        : balance(initialBalance)
+    {
+    }
+
+    long long getBalance() const
+    {
+        return balance;
+    }
+
+    bool canTravel(long long fare) const
+    {
+        return fare > 0 &&
+               balance >= fare &&
+               balance - fare >= MIN_BALANCE_PAISE;
+    }
+
+    bool deduct(long long fare)
+    {
+        if (!canTravel(fare))
+        {
+            return false;
+        }
+
+        balance -= fare;
+        return true;
+    }
+};
+
+void printMoney(long long paise)
+{
+    cout << "Rs " << paise / 100 << '.'
+         << setw(2) << setfill('0') << paise % 100
+         << setfill(' ');
+}
+
+int main()
+{
+    FareTable fareTable;
+    SmartCard card(10000); // Rs 100
+
+    struct Journey
+    {
+        Zone zone;
+        bool peak;
+        const char* name;
+    };
+
+    Journey journeys[] = {
+        {Zone::Inner, false, "Inner off-peak"},
+        {Zone::Outer, true, "Outer peak"},
+        {Zone::Middle, false, "Middle off-peak"}
+    };
+
+    cout << "=== TASK 11: FINAL DESIGN ===\n\n";
+
+    for (const Journey& journey : journeys)
+    {
+        long long fare =
+            fareTable.getFare(journey.zone, journey.peak);
+
+        cout << journey.name << " fare: ";
+        printMoney(fare);
+        cout << '\n';
+
+        if (card.deduct(fare))
+        {
+            cout << "Journey: Allowed\n";
+        }
+        else
+        {
+            cout << "Journey: Denied (minimum balance rule)\n";
+        }
+
+        cout << "Remaining balance: ";
+        printMoney(card.getBalance());
+        cout << "\n\n";
+    }
+
+    cout << "=== FINAL RECOMMENDATION ===\n";
+    cout << "1. Use classes for fare calculation and card balance.\n";
+    cout << "2. Use enum class for safe zone selection.\n";
+    cout << "3. Use constexpr for centralised fare rules.\n";
+    cout << "4. Store money in integer paise using long long.\n";
+    cout << "5. Test all boundary and invalid-input cases.\n";
+
+    return 0;
+}

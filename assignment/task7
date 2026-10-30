@@ -1,0 +1,96 @@
+
+#include <iostream>
+using namespace std;
+
+constexpr long long MIN_BALANCE_PAISE = 5000;
+
+// PROCEDURAL VERSION
+bool canTravelProcedural(long long balance, long long fare)
+{
+    return fare > 0 && balance - fare >= MIN_BALANCE_PAISE;
+}
+
+bool deductProcedural(long long& balance, long long fare)
+{
+    if (canTravelProcedural(balance, fare))
+    {
+        balance -= fare;
+        return true;
+    }
+
+    return false;
+}
+
+// OBJECT-ORIENTED VERSION
+class SmartCard
+{
+private:
+    long long balance;
+
+public:
+    SmartCard(long long initialBalance)
+    {
+        balance = initialBalance;
+    }
+
+    long long getBalance() const
+    {
+        return balance;
+    }
+
+    bool canTravel(long long fare) const
+    {
+        return fare > 0 &&
+               balance - fare >= MIN_BALANCE_PAISE;
+    }
+
+    bool deduct(long long fare)
+    {
+        if (canTravel(fare))
+        {
+            balance -= fare;
+            return true;
+        }
+
+        return false;
+    }
+};
+
+int main()
+{
+    cout << "=== Procedural Version ===\n";
+
+    long long balance = 10000;
+    long long fare = 3000;
+
+    if (deductProcedural(balance, fare))
+        cout << "Journey allowed\n";
+    else
+        cout << "Journey denied\n";
+
+    cout << "Balance: Rs " << balance / 100.0 << "\n";
+
+    cout << "\n=== OOP Version ===\n";
+
+    SmartCard card(10000);
+
+    if (card.deduct(3000))
+        cout << "Journey allowed\n";
+    else
+        cout << "Journey denied\n";
+
+    cout << "Balance: Rs "
+         << card.getBalance() / 100.0 << "\n";
+
+    cout << "\n=== Minimum Balance Test ===\n";
+
+    if (card.deduct(2000))
+        cout << "Journey allowed\n";
+    else
+        cout << "Journey denied (minimum balance rule)\n";
+
+    cout << "Final balance: Rs "
+         << card.getBalance() / 100.0 << "\n";
+
+    return 0;
+}

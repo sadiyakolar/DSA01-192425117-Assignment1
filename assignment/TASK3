@@ -1,0 +1,84 @@
+
+#include <iostream>
+#include <climits>
+#include <iomanip>
+#include <limits>
+using namespace std;
+
+int main() {
+    // Money is stored in integer paise
+    long long innerFare = 1000;
+    long long middleFare = 2000;
+    long long outerFare = 3000;
+
+    // Other values
+    int hour = 9;
+    bool peak = true;
+    char zoneCode = 'I';
+    double rupees = 10.50;
+
+    long long journeys = 3000000;
+    long long dailyCollection = journeys * outerFare;
+
+    cout << "=== Task 3: Data Types ===\n\n";
+
+    cout << "Inner fare: " << innerFare << " paise\n";
+    cout << "Middle fare: " << middleFare << " paise\n";
+    cout << "Outer fare: " << outerFare << " paise\n\n";
+
+    cout << "=== Data Type Sizes ===\n";
+    cout << "sizeof(bool): " << sizeof(bool) << " bytes\n";
+    cout << "sizeof(char): " << sizeof(char) << " bytes\n";
+    cout << "sizeof(int): " << sizeof(int) << " bytes\n";
+    cout << "sizeof(long long): " << sizeof(long long) << " bytes\n";
+    cout << "sizeof(unsigned): " << sizeof(unsigned) << " bytes\n";
+    cout << "sizeof(float): " << sizeof(float) << " bytes\n";
+    cout << "sizeof(double): " << sizeof(double) << " bytes\n\n";
+
+    cout << "=== Type Compatibility ===\n";
+    cout << "int hour: " << hour << '\n';
+    cout << "bool peak: " << peak << '\n';
+    cout << "char zoneCode: " << zoneCode << '\n';
+    cout << "double rupees: " << rupees << '\n';
+    cout << "int + double: " << hour + rupees << "\n\n";
+
+    cout << "=== Integer Limits ===\n";
+    cout << "INT_MAX: " << INT_MAX << '\n';
+    cout << "INT_MIN: " << INT_MIN << '\n';
+    cout << "LLONG_MAX: " << LLONG_MAX << "\n\n";
+
+    cout << "=== Daily Collection ===\n";
+    cout << "Journeys: " << journeys << '\n';
+    cout << "Fare per journey: 3000 paise\n";
+    cout << "Total: " << dailyCollection << " paise\n";
+    cout << "Total: Rs " << dailyCollection / 100.0 << '\n';
+
+    if (dailyCollection > INT_MAX) {
+        cout << "int is NOT sufficient for this total.\n";
+    } else {
+        cout << "int is sufficient for this total.\n";
+    }
+
+    cout << "\n=== Money Precision Test ===\n";
+
+    double doubleTotal = 0.0;
+    long long paiseTotal = 0;
+
+    for (int i = 0; i < 100000; i++) {
+        doubleTotal += 0.10;
+        paiseTotal += 10;
+    }
+
+    cout << fixed << setprecision(10);
+    cout << "Using double: Rs " << doubleTotal << '\n';
+    cout << "Using paise:  Rs "
+         << setprecision(2) << paiseTotal / 100.0 << '\n';
+
+    cout << setprecision(10);
+    cout << "Double error: Rs "
+         << doubleTotal - 10000.0 << '\n';
+
+    cout << "\nsizeof(int) matches this compiler's int size.\n";
+
+    return 0;
+}

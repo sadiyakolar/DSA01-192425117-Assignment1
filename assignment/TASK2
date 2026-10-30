@@ -1,0 +1,50 @@
+
+#include <iostream>
+using namespace std;
+
+// Constants: define values in one place
+constexpr int INNER_FARE = 1000;       // Rs 10 in paise
+constexpr int MIDDLE_FARE = 2000;      // Rs 20 in paise
+constexpr int OUTER_FARE = 3000;       // Rs 30 in paise
+constexpr int PEAK_SURCHARGE_PERCENT = 20;
+constexpr int MIN_BALANCE_PAISE = 5000; // Rs 50
+
+// enum class safely represents metro zones
+enum class Zone {
+    Inner,
+    Middle,
+    Outer
+};
+
+int getFare(Zone zone) {
+    switch (zone) {
+        case Zone::Inner:
+            return INNER_FARE;
+
+        case Zone::Middle:
+            return MIDDLE_FARE;
+
+        case Zone::Outer:
+            return OUTER_FARE;
+    }
+
+    return 0;
+}
+
+int main() {
+    int innerFare = getFare(Zone::Inner);
+    int middleFare = getFare(Zone::Middle);
+    int outerFare = getFare(Zone::Outer);
+
+    cout << "Inner fare: Rs " << innerFare / 100.0 << endl;
+    cout << "Middle fare: Rs " << middleFare / 100.0 << endl;
+    cout << "Outer fare: Rs " << outerFare / 100.0 << endl;
+
+    cout << "Peak surcharge: "
+         << PEAK_SURCHARGE_PERCENT << "%" << endl;
+
+    cout << "Minimum balance: Rs "
+         << MIN_BALANCE_PAISE / 100.0 << endl;
+
+    return 0;
+}

@@ -1,0 +1,205 @@
+
+#include <iostream>
+#include <iomanip>
+#include <string>
+#include <limits>
+using namespace std;
+
+constexpr long long MIN_BALANCE_PAISE = 5000;
+constexpr int PEAK_SURCHARGE_PERCENT = 20;
+
+// Check peak hours: 8-10 AM and 5-8 PM
+bool isPeakHour(int hour)
+{
+    return (hour >= 8 && hour < 10) ||
+           (hour >= 17 && hour < 20);
+}
+
+// Calculate fare using integer paise
+long long calculateFare(int zone, int hour)
+{
+    if (hour < 0 || hour > 23)
+        return -1;
+
+    long long fare;
+
+    switch (zone)
+    {
+        case 1:
+            fare = 1000;
+            break;
+        case 2:
+            fare = 2000;
+            break;
+        case 3:
+            fare = 3000;
+            break;
+        default:
+            return -1;
+    }
+
+    if (isPeakHour(hour))
+        fare += fare * PEAK_SURCHARGE_PERCENT / 100;
+
+    return fare;
+}
+
+// Check whether a journey is allowed
+bool canTravel(long long balance, long long fare)
+{
+    return balance >= 0 &&
+           fare > 0 &&
+           balance - fare >= MIN_BALANCE_PAISE;
+}
+
+// Deduct fare if allowed
+bool deductFare(long long& balance, long long fare)
+{
+    if (!canTravel(balance, fare))
+        return false;
+
+    balance -= fare;
+    return true;
+}
+
+// Check recharge amount
+bool recharge(long long& balance, long long amount)
+{
+    if (amount < 0)
+        return false;
+
+    balance += amount;
+    return true;
+}
+
+// Read and validate integer input
+int readInteger(const string& message)
+{
+    int value;
+
+    while (true)
+    {
+        cout << message;
+
+        if (cin >> value)
+            return value;
+
+        cout << "Invalid input! Enter a number.\n";
+
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+}
+
+int main()
+{
+    cout << "===== TASK 9: METRO FARE TESTING =====\n\n";
+
+    // 1. Fare calculation test cases
+    struct TestCase
+    {
+        string description;
+        int zone;
+        int hour;
+        long long expectedFare;
+    };
+
+    TestCase tests[] = {
+        {"Inner off-peak", 1, 11, 1000},
+        {"Middle off-peak", 2, 11, 2000},
+        {"Outer off-peak", 3, 11, 3000},
+        {"Inner peak", 1, 8, 1200},
+        {"Middle peak", 2, 9, 2400},
+        {"Outer peak", 3, 17, 3600},
+        {"8 AM boundary", 1, 8, 1200},
+        {"10 AM boundary", 1, 10, 1000},
+        {"5 PM boundary", 1, 17, 1200},
+        {"8 PM boundary", 1, 20, 1000},
+        {"Invalid zone", 4, 11, -1},
+        {"Invalid hour", 1, 24, -1}
+    };
+
+    int passed = 0;
+    int total = sizeof(tests) / sizeof(tests[0]);
+
+    cout << "--- Fare Test Cases ---\n";
+
+    for (const TestCase& test : tests)
+    {
+        long long actual =
+            calculateFare(test.zone, test.hour);
+
+        bool success = actual == test.expectedFare;
+
+        cout << left << setw(22) << test.description
+             << " Expected: " << setw(6) << test.expectedFare
+             << " Actual: " << setw(6) << actual
+             << (success ? " PASS" : " FAIL") << '\n';
+
+        if (success)
+            passed++;
+    }
+
+    cout << "\nTests passed: " << passed
+         << "/" << total << "\n";
+
+    // 2. Minimum balance test
+    cout << "\n--- Minimum Balance Test ---\n";
+
+    long long balance = 6000; // Rs 60
+    long long fare = 1000;    // Rs 10
+
+    if (deductFare(balance, fare))
+        cout << "Journey allowed\n";
+    else
+        cout << "Journey denied\n";
+
+    cout << "Remaining balance: Rs "
+         << fixed << setprecision(2)
+         << balance / 100.0 << '\n';
+
+    // 3. Negative recharge test
+    cout << "\n--- Negative Recharge Test ---\n";
+
+    long long rechargeBalance = 10000;
+
+    if (recharge(rechargeBalance, -500))
+        cout << "Recharge accepted\n";
+    else
+        cout << "Negative recharge rejected\n";
+
+    // 4. Invalid letter input test
+    cout << "\n--- Invalid Input Test ---\n";
+
+    int hour = readInteger("Enter hour (0-23): ");
+
+    if (hour < 0 || hour > 23)
+        cout << "Invalid hour!\n";
+    else
+        cout << "Valid hour: " << hour << '\n';
+
+    // 5. Five-journey total test
+    cout << "\n--- Five Journey Test ---\n";
+
+    int zones[] = {1, 2, 3, 1, 2};
+    int hours[] = {11, 8, 18, 20, 17};
+
+    long long totalFare = 0;
+
+    for (int i = 0; i < 5; i++)
+    {
+        long long journeyFare =
+            calculateFare(zones[i], hours[i]);
+
+        cout << "Journey " << i + 1
+             << ": Rs " << fixed << setprecision(2)
+             << journeyFare / 100.0 << '\n';
+
+        totalFare += journeyFare;
+    }
+
+    cout << "Total fare: Rs "
+         << totalFare / 100.0 << '\n';
+
+    return 0;
+}

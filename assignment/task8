@@ -1,0 +1,133 @@
+
+#include <iostream>
+#include <iomanip>
+#include <limits>
+using namespace std;
+
+constexpr long long MIN_BALANCE_PAISE = 5000;
+
+int readInt(const string& prompt)
+{
+    int value;
+
+    while (true)
+    {
+        cout << prompt;
+
+        if (cin >> value)
+        {
+            return value;
+        }
+
+        cout << "Invalid input! Please enter a whole number.\n";
+
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+}
+
+bool isPeakHour(int hour)
+{
+    return (hour >= 8 && hour < 10) ||
+           (hour >= 17 && hour < 20);
+}
+
+long long calculateFare(int zone, int hour)
+{
+    long long fare;
+
+    switch (zone)
+    {
+        case 1:
+            fare = 1000;
+            break;
+        case 2:
+            fare = 2000;
+            break;
+        case 3:
+            fare = 3000;
+            break;
+        default:
+            return 0;
+    }
+
+    if (isPeakHour(hour))
+    {
+        fare += fare * 20 / 100;
+    }
+
+    return fare;
+}
+
+int main()
+{
+    cout << "=== Metro Smart-Card System ===\n\n";
+
+    int balanceRupees;
+
+    do
+    {
+        balanceRupees = readInt("Enter initial balance (Rs): ");
+
+        if (balanceRupees < 0)
+        {
+            cout << "Balance cannot be negative.\n";
+        }
+    }
+    while (balanceRupees < 0);
+
+    int zone;
+
+    do
+    {
+        zone = readInt("Enter zone (1=Inner, 2=Middle, 3=Outer): ");
+
+        if (zone < 1 || zone > 3)
+        {
+            cout << "Invalid zone. Enter 1, 2, or 3.\n";
+        }
+    }
+    while (zone < 1 || zone > 3);
+
+    int hour;
+
+    do
+    {
+        hour = readInt("Enter journey hour (0-23): ");
+
+        if (hour < 0 || hour > 23)
+        {
+            cout << "Invalid hour. Enter a value from 0 to 23.\n";
+        }
+    }
+    while (hour < 0 || hour > 23);
+
+    long long balance = static_cast<long long>(balanceRupees) * 100;
+    long long fare = calculateFare(zone, hour);
+
+    cout << "\n=== Journey Report ===\n";
+    cout << "Zone: "
+         << (zone == 1 ? "Inner" : zone == 2 ? "Middle" : "Outer")
+         << '\n';
+
+    cout << "Travel hour: " << hour << ":00\n";
+    cout << "Time: " << (isPeakHour(hour) ? "Peak" : "Off-peak") << '\n';
+
+    cout << fixed << setprecision(2);
+    cout << "Initial balance: Rs " << balance / 100.0 << '\n';
+    cout << "Fare: Rs " << fare / 100.0 << '\n';
+
+    if (balance - fare >= MIN_BALANCE_PAISE)
+    {
+        balance -= fare;
+        cout << "Status: Journey allowed\n";
+    }
+    else
+    {
+        cout << "Status: Journey denied (minimum balance rule)\n";
+    }
+
+    cout << "Final balance: Rs " << balance / 100.0 << '\n';
+
+    return 0;
+}

@@ -1,0 +1,91 @@
+
+#include <iostream>
+#include <iomanip>
+#include <climits>
+#include <cmath>
+using namespace std;
+
+int main()
+{
+    cout << "=== TASK 10: EXPECTATION VS EXECUTION ===\n\n";
+
+    const long long FARE_PAISE = 3000; // Rs 30 per journey
+
+    long long journeyCounts[] = {
+        20000, 500000, 3000000
+    };
+
+    cout << "--- Collection Comparison ---\n";
+    cout << fixed << setprecision(2);
+
+    cout << left << setw(18) << "Journeys"
+         << setw(22) << "Integer paise (Rs)"
+         << "Double total (Rs)\n";
+
+    for (long long journeys : journeyCounts)
+    {
+        long long integerTotal = journeys * FARE_PAISE;
+        double doubleTotal = journeys * 30.0;
+
+        cout << left << setw(18) << journeys
+             << setw(22) << integerTotal / 100.0
+             << doubleTotal << '\n';
+
+        cout << "Difference: Rs "
+             << fabs(doubleTotal - integerTotal / 100.0)
+             << '\n';
+
+        if (integerTotal > INT_MAX)
+        {
+            cout << "int is insufficient for this total.\n";
+        }
+        else
+        {
+            cout << "int can hold this total.\n";
+        }
+
+        cout << '\n';
+    }
+
+    cout << "--- Integer Limits ---\n";
+    cout << "INT_MAX: " << INT_MAX << '\n';
+    cout << "LLONG_MAX: " << LLONG_MAX << '\n';
+
+    cout << "\n--- Floating-Point Precision Test ---\n";
+
+    double doubleTotal = 0.0;
+    long long paiseTotal = 0;
+
+    const int count = 100000;
+
+    for (int i = 0; i < count; i++)
+    {
+        doubleTotal += 0.10;
+        paiseTotal += 10;
+    }
+
+    double expectedTotal = 10000.0;
+    double error = doubleTotal - expectedTotal;
+
+    cout << setprecision(15);
+    cout << "Expected total: Rs " << expectedTotal << '\n';
+    cout << "Double total:   Rs " << doubleTotal << '\n';
+    cout << "Paise total:    Rs "
+         << setprecision(2) << paiseTotal / 100.0 << '\n';
+
+    cout << setprecision(15);
+    cout << "Double error:   Rs " << error << '\n';
+
+    cout << "\n--- Data Type Comparison ---\n";
+    cout << "sizeof(int): " << sizeof(int) << " bytes\n";
+    cout << "sizeof(long long): "
+         << sizeof(long long) << " bytes\n";
+    cout << "sizeof(double): " << sizeof(double) << " bytes\n";
+
+    cout << "\n--- Conclusion ---\n";
+    cout << "Use long long integer paise for exact money totals.\n";
+    cout << "Avoid int for large network collections.\n";
+    cout << "Double can introduce rounding errors for decimal fares.\n";
+
+    return 0;
+}

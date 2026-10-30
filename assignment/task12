@@ -1,0 +1,164 @@
+
+#include <iostream>
+#include <iomanip>
+using namespace std;
+
+enum class Zone
+{
+    Inner,
+    Middle,
+    Outer,
+    Airport
+};
+
+constexpr long long FARES[] = {
+    1000, 2000, 3000, 6000
+};
+
+constexpr int PEAK_SURCHARGE = 20;
+constexpr int WEEKEND_DISCOUNT = 10;
+constexpr long long MIN_BALANCE = 5000;
+constexpr long long MONTHLY_PASS_PRICE = 50000; // Sample: Rs 500
+
+class FareTable
+{
+public:
+    long long calculateFare(Zone zone, int hour, bool weekend) const
+    {
+        int index = static_cast<int>(zone);
+
+        if (index < 0 || index > 3 || hour < 0 || hour > 23)
+            return -1;
+
+        long long fare = FARES[index];
+
+        // Weekend discount and peak surcharge do not combine.
+        if (weekend)
+        {
+            fare = fare * (100 - WEEKEND_DISCOUNT) / 100;
+        }
+        else if ((hour >= 8 && hour < 10) ||
+                 (hour >= 17 && hour < 20))
+        {
+            fare = fare * (100 + PEAK_SURCHARGE) / 100;
+        }
+
+        return fare;
+    }
+};
+
+class SmartCard
+{
+private:
+    long long balance;
+
+public:
+    explicit SmartCard(long long initialBalance)
+        : balance(initialBalance) {}
+
+    long long getBalance() const
+    {
+        return balance;
+    }
+
+    bool deductFare(long long fare)
+    {
+        if (fare <= 0 || balance - fare < MIN_BALANCE)
+            return false;
+
+        balance -= fare;
+        return true;
+    }
+};
+
+class MonthlyPass
+{
+private:
+    bool validZones[4];
+
+public:
+    MonthlyPass(Zone firstZone, Zone secondZone)
+    {
+        for (int i = 0; i < 4; i++)
+            validZones[i] = false;
+
+        validZones[static_cast<int>(firstZone)] = true;
+        validZones[static_cast<int>(secondZone)] = true;
+    }
+
+    bool allowsTravel(Zone zone) const
+    {
+        int index = static_cast<int>(zone);
+
+        return index >= 0 && index < 4 && validZones[index];
+    }
+};
+
+void printMoney(long long paise)
+{
+    cout << "Rs " << paise / 100 << '.'
+         << setw(2) << setfill('0') << paise % 100
+         << setfill(' ');
+}
+
+int main()
+{
+    FareTable fares;
+    SmartCard card(20000); // Rs 200
+
+    cout << "=== TASK 12: EXTENDED METRO SYSTEM ===\n\n";
+
+    cout << "--- Normal and Peak Fares ---\n";
+
+    long long airportPeak = fares.calculateFare(Zone::Airport, 9, false);
+    cout << "Airport fare during peak: ";
+    printMoney(airportPeak);
+    cout << '\n';
+
+    cout << "\n--- Weekend Discount ---\n";
+
+    long long airportWeekend = fares.calculateFare(Zone::Airport, 9, true);
+    cout << "Airport fare on weekend: ";
+    printMoney(airportWeekend);
+    cout << '\n';
+
+    cout << "\n--- Smart Card Test ---\n";
+
+    cout << "Initial balance: ";
+    printMoney(card.getBalance());
+    cout << '\n';
+
+    if (card.deductFare(airportPeak))
+        cout << "Airport journey allowed\n";
+    else
+        cout << "Airport journey denied (minimum balance rule)\n";
+
+    cout << "Remaining balance: ";
+    printMoney(card.getBalance());
+    cout << "\n";
+
+    cout << "\n--- Monthly Pass Test ---\n";
+
+    MonthlyPass pass(Zone::Inner, Zone::Airport);
+
+    cout << "Pass price (sample): ";
+    printMoney(MONTHLY_PASS_PRICE);
+    cout << '\n';
+
+    cout << "Inner zone: "
+         << (pass.allowsTravel(Zone::Inner) ? "Allowed" : "Not covered")
+         << '\n';
+
+    cout << "Airport zone: "
+         << (pass.allowsTravel(Zone::Airport) ? "Allowed" : "Not covered")
+         << '\n';
+
+    cout << "Outer zone: "
+         << (pass.allowsTravel(Zone::Outer) ? "Allowed" : "Not covered")
+         << '\n';
+
+    cout << "\nNote: Monthly pass price is an example.\n";
+    cout << "Pass travel is checked separately from stored balance.\n";
+
+    return 0;
+}
